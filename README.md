@@ -1,6 +1,6 @@
 > [!NOTE] 
-> **Development on this repository is indefinitely paused.** 
-> This will remain the case for the foreseeable future.
+> This fork adds experimental, opt-in [MLX support for the new alignment algorithm](docs/mlx-new-aligner.md).
+> The original upstream repository has indefinitely paused development. The default MLX alignment algorithm remains unchanged.
 
 # Stabilizing Timestamps for Whisper
 

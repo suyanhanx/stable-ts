@@ -437,6 +437,12 @@ def get_whisper_alignment_func(
         )
         import mlx.core as mx
         import mlx_whisper.timing as timing
+        from . import mlx_timing
+
+        new_options = mlx_timing.validate_options(
+            options.align.aligner, options.align.dynamic_heads, options.align.extra_models
+        )
+        add_mlx_timestamps = timing.add_word_timestamps if new_options is None else mlx_timing.add_word_timestamps
 
         def compute_timestamps(audio_segment_torch: torch.Tensor, word_tokens: List[WordToken]) -> List[dict]:
             audio_segment_np = audio_segment_torch.squeeze().numpy().astype('float32')
@@ -464,13 +470,14 @@ def get_whisper_alignment_func(
 
             mel_segments_nlc = mel_segments_padded_time.T
 
-            timing.add_word_timestamps(
+            add_mlx_timestamps(
                 segments=[temp_segment],
                 model=model,
                 tokenizer=tokenizer,
                 mel=mel_segments_nlc,
                 num_frames=num_frames_unpadded,
-                last_speech_timestamp=0.0
+                last_speech_timestamp=0.0,
+                **(new_options if new_options is not None else {})
             )
 
             return temp_segment.get('words', [])
