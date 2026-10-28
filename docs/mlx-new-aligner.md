@@ -71,3 +71,25 @@ Algorithm parity does not establish Japanese subtitle accuracy. Compare the
 same audio and corrected transcript under both algorithms, retaining VAD and
 segmentation settings. Use manually checked speech boundaries for accuracy;
 text coverage and absence of zero-duration units are structural checks only.
+
+### Local smoke comparison (2026-10-28)
+
+Two Japanese speech clips were aligned with the same local Whisper large-v3
+FP16 model, Silero VAD settings and text, on Apple Silicon through one shared
+model worker. There were 63 output units in total. The fork's legacy output
+matched installed stable-ts 2.19.1 exactly for text and start/end timestamps.
+Both algorithms preserved the supplied text and produced no zero-duration
+units on these clips.
+
+| Clip duration | Legacy task time | New task time | New MLX peak allocation |
+| --- | --- | --- | --- |
+| 9.30 s | 3.83 s | 3.75 s | 4.38 GB |
+| 12.08 s | 3.02 s | 3.94 s | 4.36 GB |
+
+Times exclude model loading but include the alignment task's preprocessing and
+VAD. These are single warm-model runs, not a controlled performance benchmark;
+MLX allocation is not total process or system memory. Three units shifted by
+more than 200 ms between algorithms; the maximum boundary difference was
+640 ms. No manually labeled boundary reference was used, so this establishes
+functional operation, not an accuracy improvement. Long recordings and
+overlapping speech were not evaluated. The default remains legacy.
